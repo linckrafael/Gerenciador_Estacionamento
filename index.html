@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gerenciador de Estacionamento</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      color: #333;
+      text-align: center;
+    }
+
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+
+    #controls button {
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #4CAF50, #388E3C);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    #controls button:hover {
+      background: linear-gradient(135deg, #66BB6A, #43A047);
+      transform: scale(1.05);
+    }
+
+    #contador {
+      font-size: 18px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      padding: 10px 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      color: #222;
+      text-align: center;
+    }
+
+    .estacionamento-wrapper {
+      width: 100%;
+      max-width: 800px;
+      position: relative;
+      aspect-ratio: 1 / 1;
+    }
+
+    #estacionamento {
+      width: 800px;
+      height: 800px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-image: url('estacionamento_800x800.png');
+      background-size: cover;
+      transform-origin: top left;
+    }
+
+    .vaga {
+      position: absolute;
+      width: 40px;
+      height: 20px;
+      background-color: rgba(0, 200, 0, 0.5);
+      border: 1px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #000;
+      cursor: pointer;
+      user-select: none;
+      transform-origin: center center;
+      border-radius: 4px;
+    }
+
+    .vaga.ocupada {
+      background-color: rgba(200, 0, 0, 0.7);
+    }
+
+    .vaga.editando {
+      outline: 2px dashed #000;
+      cursor: move;
+    }
+
+    .botoes-rotacao {
+      position: absolute;
+      display: flex;
+      gap: 2px;
+      margin-top: 22px;
+    }
+
+    .botao-rotacao {
+      background-color: #fff;
+      border: 1px solid #aaa;
+      padding: 0 4px;
+      font-size: 10px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Gerenciador de Estacionamento</h2>
+
+ <!--
+ <div id="controls">
+    <button onclick="toggleCriar()">Modo Criar</button>
+    <button onclick="toggleEditar()">Modo Editar</button>
+    <button onclick="salvar()">Salvar</button>
+    <button onclick="limpar()">Limpar Tudo</button>
+  </div>
+-->
+
+  <div id="contador">Total: 0 | Ocupadas: 0 | Livres: 0</div>
+
+  <div class="estacionamento-wrapper">
+    <div id="estacionamento"></div>
+  </div>
+
+  <script>
+    const wrapper = document.querySelector('.estacionamento-wrapper');
+    const container = document.getElementById('estacionamento');
+    const contador = document.getElementById('contador');
+    let modoCriar = false;
+    let modoEditar = false;
+    let vagas = JSON.parse(localStorage.getItem('vagasEstacionamento') || '[]');
+    let idCounter = vagas.length + 1;
+    let scale = 1;
+
+    function renderVagas() {
+      container.innerHTML = '';
+      vagas.forEach(v => {
+        const div = document.createElement('div');
+        div.className = 'vaga';
+        if (v.ocupada) div.classList.add('ocupada');
+        if (modoEditar) div.classList.add('editando');
+        div.style.top = v.top + 'px';
+        div.style.left = v.left + 'px';
+        div.style.transform = `rotate(${v.rotate || 0}deg)`;
+        div.textContent = v.id;
+        div.title = v.id;
+        div.dataset.id = v.id;
+
+        div.addEventListener('click', e => {
+          if (modoEditar) {
+            e.stopPropagation();
+            mostrarControlesRotacao(div, v);
+          } else if (!modoCriar) {
+            v.ocupada = !v.ocupada;
+            salvar();
+            renderVagas();
+          }
+        });
+
+        if (modoEditar) enableDrag(div, v);
+        container.appendChild(div);
+      });
+
+      atualizarContador();
+    }
+
+    function mostrarControlesRotacao(vagaEl, vagaData) {
+      document.querySelectorAll('.botoes-rotacao').forEach(e => e.remove());
+
+      const controles = document.createElement('div');
+      controles.className = 'botoes-rotacao';
+      controles.style.top = vagaEl.style.top;
+      controles.style.left = vagaEl.style.left;
+
+      const btnEsq = document.createElement('button');
+      btnEsq.textContent = '⟲';
+      btnEsq.className = 'botao-rotacao';
+      btnEsq.onclick = e => {
+        e.stopPropagation();
+        vagaData.rotate = (vagaData.rotate || 0) - 15;
+        renderVagas();
+      };
+
+      const btnDir = document.createElement('button');
+      btnDir.textContent = '⟳';
+      btnDir.className = 'botao-rotacao';
+      btnDir.onclick = e => {
+        e.stopPropagation();
+        vagaData.rotate = (vagaData.rotate || 0) + 15;
+        renderVagas();
+      };
+
+      controles.appendChild(btnEsq);
+      controles.appendChild(btnDir);
+      container.appendChild(controles);
+    }
+
+    function enableDrag(el, vagaObj) {
+      let offsetX, offsetY;
+
+      el.onmousedown = function (e) {
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+
+        function mover(ev) {
+          const x = (ev.pageX - container.getBoundingClientRect().left - offsetX) / scale;
+          const y = (ev.pageY - container.getBoundingClientRect().top - offsetY) / scale;
+          el.style.left = x + 'px';
+          el.style.top = y + 'px';
+          vagaObj.left = x;
+          vagaObj.top = y;
+        }
+
+        function soltar() {
+          document.removeEventListener('mousemove', mover);
+          document.removeEventListener('mouseup', soltar);
+        }
+
+        document.addEventListener('mousemove', mover);
+        document.addEventListener('mouseup', soltar);
+      };
+    }
+
+    function toggleCriar() {
+      modoCriar = !modoCriar;
+      modoEditar = false;
+      alert(modoCriar ? 'Clique no mapa para adicionar vagas.' : 'Modo criação desativado');
+    }
+
+    function toggleEditar() {
+      modoEditar = !modoEditar;
+      modoCriar = false;
+      renderVagas();
+      alert(modoEditar ? 'Modo edição ativado. Você pode mover e girar vagas.' : 'Modo edição desativado');
+    }
+
+    container.addEventListener('click', function (e) {
+      if (modoCriar) {
+        const rect = container.getBoundingClientRect();
+        const vaga = {
+          id: 'V' + idCounter.toString().padStart(2, '0'),
+          top: (e.clientY - rect.top) / scale,
+          left: (e.clientX - rect.left) / scale,
+          ocupada: false,
+          rotate: 0
+        };
+        idCounter++;
+        vagas.push(vaga);
+        salvar();
+        renderVagas();
+      }
+    });
+
+    function salvar() {
+      localStorage.setItem('vagasEstacionamento', JSON.stringify(vagas));
+    }
+
+    function limpar() {
+      if (confirm("Deseja remover todas as vagas?")) {
+        vagas = [];
+        idCounter = 1;
+        localStorage.removeItem('vagasEstacionamento');
+        renderVagas();
+      }
+    }
+
+    function atualizarContador() {
+      const total = vagas.length;
+      const ocupadas = vagas.filter(v => v.ocupada).length;
+      contador.textContent = `Total: ${total} | Ocupadas: ${ocupadas} | Livres: ${total - ocupadas}`;
+    }
+
+    function redimensionarEstacionamento() {
+      const w = wrapper.offsetWidth;
+      scale = w / 800;
+      container.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', redimensionarEstacionamento);
+    redimensionarEstacionamento();
+    renderVagas();
+  </script>
+
+</body>
+</html>
