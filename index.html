@@ -4,174 +4,93 @@
   <meta charset="UTF-8">
   <title>Gerenciador de Estacionamento</title>
   <style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f0f2f5;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
 
-  h2 {
-    margin-bottom: 10px;
-    color: #333;
-  }
+    #controls {
+      margin-bottom: 15px;
+    }
 
-  #controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 20px;
-    gap: 10px;
-  }
+    #controls button {
+      margin-right: 10px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
 
-  #controls button {
-    padding: 10px 16px;
-    background: linear-gradient(135deg, #4CAF50, #388E3C);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.3s;
-  }
+    #contador {
+      margin: 10px 0;
+      font-weight: bold;
+    }
 
-  #controls button:hover {
-    background: linear-gradient(135deg, #66BB6A, #43A047);
-    transform: scale(1.05);
-  }
+    #estacionamento {
+      position: relative;
+      background-image: url('estacionamento_800x800.png');
+      background-size: cover;
+      width: 800px;
+      height: 800px;
+      border: 2px solid #333;
+    }
 
-  #contador {
-    font-size: 18px;
-    margin-bottom: 15px;
-    font-weight: bold;
-    padding: 10px 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    color: #222;
-  }
+    .vaga {
+      position: absolute;
+      width: 40px;
+      height: 20px;
+      background-color: rgba(0, 200, 0, 0.5);
+      border: 1px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #000;
+      cursor: pointer;
+      user-select: none;
+      transform-origin: center center;
+    }
 
-  #estacionamento {
-    position: relative;
-    background-image: url('estacionamento_800x800.png');
-    background-size: cover;
-    width: 800px;
-    height: 800px;
-    border: 2px solid #333;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    margin-bottom: 30px;
-  }
+    .vaga.ocupada {
+      background-color: rgba(200, 0, 0, 0.7);
+    }
 
-  .vaga {
-    position: absolute;
-    width: 40px;
-    height: 20px;
-    background-color: rgba(0, 200, 0, 0.5);
-    border: 1px solid #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    color: #000;
-    cursor: pointer;
-    user-select: none;
-    transform-origin: center center;
-    border-radius: 4px;
-  }
+    .vaga.editando {
+      outline: 2px dashed #000;
+      cursor: move;
+    }
 
-  .vaga.ocupada {
-    background-color: rgba(200, 0, 0, 0.7);
-  }
+    .botoes-rotacao {
+      position: absolute;
+      display: flex;
+      gap: 2px;
+      margin-top: 22px;
+    }
 
-  .vaga.editando {
-    outline: 2px dashed #000;
-    cursor: move;
-  }
-
-  .botoes-rotacao {
-    position: absolute;
-    display: flex;
-    gap: 2px;
-    margin-top: 22px;
-  }
-
-  .botao-rotacao {
-    background-color: #fff;
-    border: 1px solid #aaa;
-    padding: 0 4px;
-    font-size: 10px;
-    cursor: pointer;
-    border-radius: 3px;
-  }
-#estacionamento-wrapper {
-  width: 100%;
-  max-width: 800px;
-  aspect-ratio: 1 / 1;
-  position: relative;
-}
-#estacionamento {
-  width: 800px;
-  height: 800px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-image: url('estacionamento_800x800.png');
-  background-size: cover;
-  transform-origin: top left;
-}
-#estacionamento-wrapper {
-  width: 100%;
-  max-width: 800px;
-  aspect-ratio: 1 / 1;
-  position: relative;
-}
-#estacionamento {
-  width: 800px;
-  height: 800px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-image: url('estacionamento_800x800.png');
-  background-size: cover;
-  transform-origin: top left;
-}
-
-    
-</style>
+    .botao-rotacao {
+      background-color: #fff;
+      border: 1px solid #aaa;
+      padding: 0 4px;
+      font-size: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-<div id="estacionamento-wrapper">
-  <div id="estacionamento"></div>
-</div>
-
-<div>
-  <label for="modo">Modo:</label>
-  <select id="modo" onchange="trocarModo(this.value)">
-    <option value="visualizacao">Visualização</option>
-    <option value="admin">Administrador</option>
-  </select>
-</div>
-
   <h2>Gerenciador de Estacionamento</h2>
-
+<!--
   <div id="controls">
     <button onclick="toggleCriar()">Modo Criar</button>
     <button onclick="toggleEditar()">Modo Editar</button>
     <button onclick="salvar()">Salvar</button>
   </div>
-
+-->
   <div id="contador">Total: 0 | Ocupadas: 0 | Livres: 0</div>
   <div id="estacionamento"></div>
 
   <script>
     const container = document.getElementById('estacionamento');
     const contador = document.getElementById('contador');
-    const wrapper = document.getElementById('estacionamento-wrapper');
-
     let modoCriar = false;
     let modoEditar = false;
     let vagas = [ 
@@ -422,31 +341,12 @@
         renderVagas();
       }
     });
-
+<!--
     function salvar() {
       localStorage.setItem('vagasEstacionamento', JSON.stringify(vagas));
     }
 
-    function ajustarEscala() {
-  const w = wrapper.offsetWidth;
-  scale = w / 800;
-  container.style.transform = `scale(${scale})`;
-}
-window.addEventListener('resize', ajustarEscala);
-ajustarEscala();
-    
-let modoAtual = "visualizacao";
-let scale = 1;
-
-
-  function trocarModo(modo) {
-  modoAtual = modo;
-  modoCriar = false;
-  modoEditar = false;
-  document.getElementById("controls").style.display = modo === "admin" ? "flex" : "none";
-  renderVagas();
-}
-
+-->
 
     function atualizarContador() {
       const total = vagas.length;
