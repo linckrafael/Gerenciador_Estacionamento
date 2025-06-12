@@ -127,6 +127,13 @@
 </style>
 </head>
 <body>
+<div>
+  <label for="modo">Modo:</label>
+  <select id="modo" onchange="trocarModo(this.value)">
+    <option value="visualizacao">Visualização</option>
+    <option value="admin">Administrador</option>
+  </select>
+</div>
 
   <h2>Gerenciador de Estacionamento</h2>
 <!--
@@ -392,12 +399,19 @@
         renderVagas();
       }
     });
-<!--
+
     function salvar() {
       localStorage.setItem('vagasEstacionamento', JSON.stringify(vagas));
     }
 
--->
+  function trocarModo(modo) {
+  modoAtual = modo;
+  modoCriar = false;
+  modoEditar = false;
+  document.getElementById("controls").style.display = modo === "admin" ? "flex" : "none";
+  renderVagas();
+}
+
 
     function atualizarContador() {
       const total = vagas.length;
