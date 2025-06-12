@@ -2,77 +2,36 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gerenciador de Estacionamento</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f2f5;
-      margin: 0;
+      font-family: sans-serif;
       padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    h2 {
-      margin-bottom: 10px;
-      color: #333;
-      text-align: center;
+      background-color: #f4f4f4;
     }
 
     #controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
       margin-bottom: 15px;
-      gap: 10px;
     }
 
     #controls button {
-      padding: 10px 16px;
-      background: linear-gradient(135deg, #4CAF50, #388E3C);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
+      margin-right: 10px;
+      padding: 6px 12px;
       cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
-    }
-
-    #controls button:hover {
-      background: linear-gradient(135deg, #66BB6A, #43A047);
-      transform: scale(1.05);
     }
 
     #contador {
-      font-size: 18px;
-      margin-bottom: 15px;
+      margin: 10px 0;
       font-weight: bold;
-      padding: 10px 20px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      color: #222;
-      text-align: center;
-    }
-
-    .estacionamento-wrapper {
-      width: 100%;
-      max-width: 800px;
-      position: relative;
-      aspect-ratio: 1 / 1;
     }
 
     #estacionamento {
-      width: 800px;
-      height: 800px;
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: relative;
       background-image: url('estacionamento_800x800.png');
       background-size: cover;
-      transform-origin: top left;
+      width: 800px;
+      height: 800px;
+      border: 2px solid #333;
     }
 
     .vaga {
@@ -89,7 +48,6 @@
       cursor: pointer;
       user-select: none;
       transform-origin: center center;
-      border-radius: 4px;
     }
 
     .vaga.ocupada {
@@ -114,38 +72,155 @@
       padding: 0 4px;
       font-size: 10px;
       cursor: pointer;
-      border-radius: 3px;
     }
   </style>
 </head>
 <body>
 
   <h2>Gerenciador de Estacionamento</h2>
-
- <!--
- <div id="controls">
+<!--
+  <div id="controls">
     <button onclick="toggleCriar()">Modo Criar</button>
     <button onclick="toggleEditar()">Modo Editar</button>
     <button onclick="salvar()">Salvar</button>
-    <button onclick="limpar()">Limpar Tudo</button>
   </div>
 -->
-
   <div id="contador">Total: 0 | Ocupadas: 0 | Livres: 0</div>
-
-  <div class="estacionamento-wrapper">
-    <div id="estacionamento"></div>
-  </div>
+  <div id="estacionamento"></div>
 
   <script>
-    const wrapper = document.querySelector('.estacionamento-wrapper');
     const container = document.getElementById('estacionamento');
     const contador = document.getElementById('contador');
     let modoCriar = false;
     let modoEditar = false;
-    let vagas = JSON.parse(localStorage.getItem('vagasEstacionamento') || '[]');
+    let vagas = [ 
+{id: "V01", top: 57, left: 372, ocupada: false, rotate: 15},
+
+{id: "V02", top: 97, left: 395, ocupada: false, rotate: 15},
+
+{id: "V03", top: 132, left: 411, ocupada: false, rotate: 15},
+
+{id: "V04", top: 171, left: 434, ocupada: false, rotate: 15},
+
+{id: "V05", top: 340, left: 515, ocupada: false, rotate: 60},
+
+{id: "V06", top: 411, left: 586, ocupada: false, rotate: -30},
+
+{id: "V07", top: 443, left: 602, ocupada: false, rotate: -30},
+
+{id: "V08", top: 468, left: 617, ocupada: false, rotate: -30},
+
+{id: "V09", top: 494, left: 632, ocupada: false, rotate: -30},
+
+{id: "V10", top: 519, left: 646, ocupada: false, rotate: -30},
+
+{id: "V11", top: 547, left: 658, ocupada: false, rotate: -30},
+
+{id: "V12", top: 574, left: 671, ocupada: false, rotate: -30},
+
+{id: "V13", top: 601, left: 684, ocupada: false, rotate: -30},
+
+{id: "V14", top: 627, left: 700, ocupada: false, rotate: -30},
+
+{id: "V15", top: 181, left: 323, ocupada: false, rotate: -75},
+
+{id: "V16", top: 218, left: 342, ocupada: false, rotate: -75},
+
+{id: "V17", top: 260, left: 361, ocupada: false, rotate: -75},
+
+{id: "V18", top: 292, left: 382, ocupada: false, rotate: -75},
+
+{id: "V19", top: 329, left: 404, ocupada: false, rotate: -75},
+
+{id: "V20", top: 369, left: 422, ocupada: false, rotate: -75},
+
+{id: "V21", top: 408, left: 444, ocupada: false, rotate: -75},
+
+{id: "V22", top: 444, left: 464, ocupada: false, rotate: -75},
+
+{id: "V23", top: 486, left: 482, ocupada: false, rotate: -75},
+
+{id: "V24", top: 518, left: 503, ocupada: false, rotate: -75},
+
+{id: "V25", top: 557, left: 522, ocupada: false, rotate: -75},
+
+{id: "V26", top: 594, left: 544, ocupada: false, rotate: -75},
+
+{id: "V27", top: 634, left: 565, ocupada: false, rotate: -75},
+
+{id: "V28", top: 683, left: 596, ocupada: false, rotate: -30},
+
+{id: "V29", top: 292, left: 265, ocupada: false, rotate: 15},
+
+{id: "V30", top: 335, left: 288, ocupada: false, rotate: 15},
+
+{id: "V31", top: 371, left: 307, ocupada: false, rotate: 15},
+
+{id: "V32", top: 411, left: 329, ocupada: false, rotate: 15},
+
+{id: "V33", top: 449, left: 350, ocupada: false, rotate: 15},
+
+{id: "V34", top: 485, left: 370, ocupada: false, rotate: 15},
+
+{id: "V35", top: 523, left: 387, ocupada: false, rotate: 15},
+
+{id: "V36", top: 560, left: 412, ocupada: false, rotate: 15},
+
+{id: "V37", top: 599, left: 431, ocupada: false, rotate: 15},
+
+{id: "V38", top: 636, left: 450, ocupada: false, rotate: 15},
+
+{id: "V39", top: 266, left: 116, ocupada: false, rotate: -30},
+
+{id: "V40", top: 290, left: 128, ocupada: false, rotate: -30},
+
+{id: "V41", top: 320, left: 141, ocupada: false, rotate: -30},
+
+{id: "V42", top: 346, left: 157, ocupada: false, rotate: -30},
+
+{id: "V43", top: 373, left: 173, ocupada: false, rotate: -30},
+
+{id: "V44", top: 398, left: 185, ocupada: false, rotate: -30},
+
+{id: "V45", top: 425, left: 197, ocupada: false, rotate: -30},
+
+{id: "V46", top: 451, left: 210, ocupada: false, rotate: -30},
+
+{id: "V47", top: 478, left: 228, ocupada: false, rotate: -30},
+
+{id: "V48", top: 505, left: 244, ocupada: false, rotate: -30},
+ 
+{id: "V49", top: 529, left: 255, ocupada: false, rotate: -30},
+ 
+{id: "V50", top: 555, left: 272, ocupada: false, rotate: -30},
+ 
+{id: "V51", top: 582, left: 287, ocupada: false, rotate: -30},
+
+{id: "V52", top: 608, left: 300, ocupada: false, rotate: -30},
+
+{id: "V53", top: 636, left: 314, ocupada: false, rotate: -30},
+
+{id: "V54", top: 667, left: 328, ocupada: false, rotate: -30},
+
+{id: "V55", top: 693, left: 340, ocupada: false, rotate: -30},
+
+{id: "V56", top: 719, left: 356, ocupada: false, rotate: -30},
+
+{id: "V57", top: 748, left: 369, ocupada: false, rotate: -30},
+
+{id: "V58", top: 317, left: 226, ocupada: false, rotate: 60},
+
+{id: "V59", top: 377, left: 261, ocupada: false, rotate: 60},
+
+{id: "V60", top: 436, left: 291, ocupada: false, rotate: 60},
+
+{id: "V61", top: 500, left: 330, ocupada: false, rotate: 60},
+
+{id: "V62", top: 566, left: 361, ocupada: false, rotate: 60},
+
+{id: "V63", top: 635, left: 397, ocupada: false, rotate: 60}]
+
     let idCounter = vagas.length + 1;
-    let scale = 1;
 
     function renderVagas() {
       container.innerHTML = '';
@@ -173,6 +248,7 @@
         });
 
         if (modoEditar) enableDrag(div, v);
+
         container.appendChild(div);
       });
 
@@ -180,6 +256,7 @@
     }
 
     function mostrarControlesRotacao(vagaEl, vagaData) {
+      // remove controles antigos
       document.querySelectorAll('.botoes-rotacao').forEach(e => e.remove());
 
       const controles = document.createElement('div');
@@ -218,8 +295,8 @@
         offsetY = e.offsetY;
 
         function mover(ev) {
-          const x = (ev.pageX - container.getBoundingClientRect().left - offsetX) / scale;
-          const y = (ev.pageY - container.getBoundingClientRect().top - offsetY) / scale;
+          const x = ev.pageX - container.offsetLeft - offsetX;
+          const y = ev.pageY - container.offsetTop - offsetY;
           el.style.left = x + 'px';
           el.style.top = y + 'px';
           vagaObj.left = x;
@@ -251,11 +328,10 @@
 
     container.addEventListener('click', function (e) {
       if (modoCriar) {
-        const rect = container.getBoundingClientRect();
         const vaga = {
           id: 'V' + idCounter.toString().padStart(2, '0'),
-          top: (e.clientY - rect.top) / scale,
-          left: (e.clientX - rect.left) / scale,
+          top: e.offsetY,
+          left: e.offsetX,
           ocupada: false,
           rotate: 0
         };
@@ -265,19 +341,12 @@
         renderVagas();
       }
     });
-
+<!--
     function salvar() {
       localStorage.setItem('vagasEstacionamento', JSON.stringify(vagas));
     }
 
-    function limpar() {
-      if (confirm("Deseja remover todas as vagas?")) {
-        vagas = [];
-        idCounter = 1;
-        localStorage.removeItem('vagasEstacionamento');
-        renderVagas();
-      }
-    }
+-->
 
     function atualizarContador() {
       const total = vagas.length;
@@ -285,16 +354,9 @@
       contador.textContent = `Total: ${total} | Ocupadas: ${ocupadas} | Livres: ${total - ocupadas}`;
     }
 
-    function redimensionarEstacionamento() {
-      const w = wrapper.offsetWidth;
-      scale = w / 800;
-      container.style.transform = `scale(${scale})`;
-    }
-
-    window.addEventListener('resize', redimensionarEstacionamento);
-    redimensionarEstacionamento();
     renderVagas();
   </script>
 
 </body>
 </html>
+
