@@ -137,7 +137,10 @@
   </div>
 -->
   <div id="contador">Total: 0 | Ocupadas: 0 | Livres: 0</div>
+  <div id="estacionamento-wrapper">
   <div id="estacionamento"></div>
+</div>
+
 
   <script>
     const container = document.getElementById('estacionamento');
@@ -370,6 +373,13 @@
       alert(modoCriar ? 'Clique no mapa para adicionar vagas.' : 'Modo criação desativado');
     }
 
+    function ajustarEscala() {
+  const w = wrapper.offsetWidth;
+  scale = w / 800;
+  container.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', ajustarEscala);
+ajustarEscala();
     function toggleEditar() {
       modoEditar = !modoEditar;
       modoCriar = false;
