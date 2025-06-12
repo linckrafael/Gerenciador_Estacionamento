@@ -122,11 +122,32 @@
   background-size: cover;
   transform-origin: top left;
 }
+#estacionamento-wrapper {
+  width: 100%;
+  max-width: 800px;
+  aspect-ratio: 1 / 1;
+  position: relative;
+}
+#estacionamento {
+  width: 800px;
+  height: 800px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url('estacionamento_800x800.png');
+  background-size: cover;
+  transform-origin: top left;
+}
 
     
 </style>
 </head>
 <body>
+
+<div id="estacionamento-wrapper">
+  <div id="estacionamento"></div>
+</div>
+
 <div>
   <label for="modo">Modo:</label>
   <select id="modo" onchange="trocarModo(this.value)">
@@ -403,6 +424,15 @@
     function salvar() {
       localStorage.setItem('vagasEstacionamento', JSON.stringify(vagas));
     }
+
+    function ajustarEscala() {
+  const w = wrapper.offsetWidth;
+  scale = w / 800;
+  container.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', ajustarEscala);
+ajustarEscala();
+
 
   function trocarModo(modo) {
   modoAtual = modo;
