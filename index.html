@@ -157,19 +157,21 @@
 </div>
 
   <h2>Gerenciador de Estacionamento</h2>
-<!--
+
   <div id="controls">
     <button onclick="toggleCriar()">Modo Criar</button>
     <button onclick="toggleEditar()">Modo Editar</button>
     <button onclick="salvar()">Salvar</button>
   </div>
--->
+
   <div id="contador">Total: 0 | Ocupadas: 0 | Livres: 0</div>
   <div id="estacionamento"></div>
 
   <script>
     const container = document.getElementById('estacionamento');
     const contador = document.getElementById('contador');
+    const wrapper = document.getElementById('estacionamento-wrapper');
+
     let modoCriar = false;
     let modoEditar = false;
     let vagas = [ 
@@ -432,6 +434,9 @@
 }
 window.addEventListener('resize', ajustarEscala);
 ajustarEscala();
+    
+let modoAtual = "visualizacao";
+let scale = 1;
 
 
   function trocarModo(modo) {
